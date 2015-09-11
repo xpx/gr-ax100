@@ -31,5 +31,5 @@ except ImportError:
 	pass
 
 # import any pure python here
-from frame-decoder import frame-decoder
+from frame_decoder import frame_decoder
 #

@@ -22,13 +22,13 @@
 import numpy
 from gnuradio import gr
 
-class frame-decoder(gr.sync_block):
+class frame_decoder(gr.sync_block):
     """
-    docstring for block frame-decoder
+    docstring for block frame_decoder
     """
     def __init__(self, rs_enabled):
         gr.sync_block.__init__(self,
-            name="frame-decoder",
+            name="frame_decoder",
             in_sig=[<+numpy.float+>],
             out_sig=None)
 
