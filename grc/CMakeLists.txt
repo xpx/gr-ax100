@@ -18,5 +18,6 @@
 # Boston, MA 02110-1301, USA.
 
 install(FILES
-    ax100_frame_decoder.xml DESTINATION share/gnuradio/grc/blocks
+    ax100_frame_decoder.xml
+    ax100_descrambler.xml DESTINATION share/gnuradio/grc/blocks
 )

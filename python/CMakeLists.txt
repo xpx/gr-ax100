@@ -31,7 +31,8 @@ endif()
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    frame_decoder.py DESTINATION ${GR_PYTHON_DIR}/ax100
+    frame_decoder.py
+    descrambler.py DESTINATION ${GR_PYTHON_DIR}/ax100
 )
 
 ########################################################################
