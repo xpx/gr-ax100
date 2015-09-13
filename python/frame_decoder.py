@@ -29,7 +29,7 @@ class frame_decoder(gr.sync_block):
     def __init__(self, rs_enabled):
         gr.sync_block.__init__(self,
             name="frame_decoder",
-            in_sig=[<+numpy.float+>],
+            in_sig=[numpy.uint8],
             out_sig=None)
 
 

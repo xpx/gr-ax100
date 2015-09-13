@@ -30,21 +30,21 @@ class descrambler(gr.sync_block):
     def __init__(self):
         gr.sync_block.__init__(self,
             name="descrambler",
-            in_sig=[<+numpy.float+>],
-            out_sig=[<+numpy.float+>])
+            in_sig=[numpy.uint8],
+            out_sig=[numpy.uint8])
 
-        sr = bitarray()
+        self.sr = bitarray()
         for i in range(18):
-            sr.append(0)
+            self.sr.append(0)
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
         out = output_items[0]
 
-        for i in range(len(in0):
-            out[i] = sr[0] ^ sr[12] ^ sr[17]
-            sr.insert(0, in0[i] & 0x01)
-            sr.pop()
+        for i in range(len(in0)):
+            out[i] = self.sr[0] ^ self.sr[12] ^ self.sr[17]
+            self.sr.insert(0, in0[i] & 0x01)
+            self.sr.pop()
 
         return len(output_items[0])
 
