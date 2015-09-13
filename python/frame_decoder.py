@@ -20,6 +20,7 @@
 # 
 
 import numpy
+import pmt
 from gnuradio import gr
 
 class frame_decoder(gr.sync_block):
@@ -32,6 +33,8 @@ class frame_decoder(gr.sync_block):
             in_sig=[numpy.uint8],
             out_sig=None)
 
+        self.message_port_register_out(pmt.intern('out'))
+
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -42,10 +45,9 @@ class frame_decoder(gr.sync_block):
             packet = {}
             packet['length'] = numpy.packbits(in0[tag.offset:tag.offset+8])
             packet['payload'] = numpy.packbits(in0[tag.offset+8:tag.offset+8+int(packet['length'])*8])
-            print "Packet length {}".format(int(packet['length']))
-            for i in range(len(packet['payload'])):
-                print i, hex(packet['payload'][i])
 
+            msg_data = pmt.to_pmt(numpy.concatenate((numpy.array([0,int(packet['length']) - 33], dtype=numpy.uint8), packet['payload'][:int(packet['length']) - 33])))
+            self.message_port_pub(pmt.intern('out'),  pmt.cons(pmt.PMT_NIL, msg_data))
 
         return len(input_items[0])
 

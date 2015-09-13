@@ -34,4 +34,11 @@
     <type>byte</type>
   </sink>
 
+  <source>
+    <name>out</name>
+    <type>message</type>
+    <optional>1</optional>
+  </source>
+
+
 </block>
