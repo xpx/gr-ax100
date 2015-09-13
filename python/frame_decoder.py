@@ -35,6 +35,17 @@ class frame_decoder(gr.sync_block):
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
-        # <+signal processing here+>
+
+        tags = self.get_tags_in_window(0,0,len(in0))
+        for tag in tags:
+            print "Syncword found with {} bit errors at pos {}".format(tag.value, tag.offset)
+            packet = {}
+            packet['length'] = numpy.packbits(in0[tag.offset:tag.offset+8])
+            packet['payload'] = numpy.packbits(in0[tag.offset+8:tag.offset+8+int(packet['length'])*8])
+            print "Packet length {}".format(int(packet['length']))
+            for i in range(len(packet['payload'])):
+                print i, hex(packet['payload'][i])
+
+
         return len(input_items[0])
 
