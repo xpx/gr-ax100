@@ -41,13 +41,21 @@ class frame_decoder(gr.sync_block):
 
         tags = self.get_tags_in_window(0,0,len(in0))
         for tag in tags:
-            print "Syncword found with {} bit errors at pos {}".format(tag.value, tag.offset)
-            packet = {}
-            packet['length'] = numpy.packbits(in0[tag.offset:tag.offset+8])
-            packet['payload'] = numpy.packbits(in0[tag.offset+8:tag.offset+8+int(packet['length'])*8])
-
-            msg_data = pmt.to_pmt(numpy.concatenate((numpy.array([0,int(packet['length']) - 33], dtype=numpy.uint8), packet['payload'][:int(packet['length']) - 33])))
-            self.message_port_pub(pmt.intern('out'),  pmt.cons(pmt.PMT_NIL, msg_data))
-
+            try:
+                print "Syncword found with {} bit errors at pos {}".format(tag.value, tag.offset)
+                packet = {}
+                packet['length'] = numpy.packbits(in0[tag.offset - self.nitems_read(0):tag.offset+8 - self.nitems_read(0)])
+                packet['payload'] = numpy.packbits(in0[tag.offset+8 - self.nitems_read(0):tag.offset+8+int(packet['length'])*8 - self.nitems_read(0)])
+                print "packet len: ", int(packet['length'])
+                tmp = numpy.copy(packet['payload'][:4])
+                packet['payload'][0] = tmp[3]
+                packet['payload'][1] = tmp[2]
+                packet['payload'][2] = tmp[1]
+                packet['payload'][3] = tmp[0]
+            
+                msg_data = pmt.to_pmt(numpy.concatenate((numpy.array([int(packet['length']) - 33], dtype=numpy.uint8), packet['payload'][:int(packet['length']) - 33])))
+                self.message_port_pub(pmt.intern('out'),  pmt.cons(pmt.PMT_NIL, msg_data))
+            except:
+                print "except in frame decode"
         return len(input_items[0])
 
