@@ -26,6 +26,7 @@ include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
 list(APPEND ax100_sources
+	ax100rs.cc
 )
 
 set(ax100_sources "${ax100_sources}" PARENT_SCOPE)

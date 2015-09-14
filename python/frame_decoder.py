@@ -22,6 +22,7 @@
 import numpy
 import pmt
 from gnuradio import gr
+import ctypes
 
 class frame_decoder(gr.sync_block):
     """
@@ -33,6 +34,9 @@ class frame_decoder(gr.sync_block):
             in_sig=[numpy.uint8],
             out_sig=None)
 
+        self.libax100 = ctypes.CDLL('libgnuradio-ax100.so')
+        self.libax100.decode_rs_8.restype = ctypes.c_int
+        self.libax100.decode_rs_8.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int]
         self.message_port_register_out(pmt.intern('out'))
 
 
@@ -40,22 +44,38 @@ class frame_decoder(gr.sync_block):
         in0 = input_items[0]
 
         tags = self.get_tags_in_window(0,0,len(in0))
+
         for tag in tags:
             try:
-                print "Syncword found with {} bit errors at pos {}".format(tag.value, tag.offset)
                 packet = {}
-                packet['length'] = numpy.packbits(in0[tag.offset - self.nitems_read(0):tag.offset+8 - self.nitems_read(0)])
-                packet['payload'] = numpy.packbits(in0[tag.offset+8 - self.nitems_read(0):tag.offset+8+int(packet['length'])*8 - self.nitems_read(0)])
-                print "packet len: ", int(packet['length'])
+                packet['length'] = numpy.packbits(in0[tag.offset - self.nitems_read(0):tag.offset + 8 - self.nitems_read(0)])
+                packet['payload'] = numpy.packbits(in0[tag.offset + 8 - self.nitems_read(0):tag.offset + int(packet['length']) * 8 - self.nitems_read(0)])
+
+                # Calculate RS
+                bytes_corr = self.libax100.decode_rs_8(packet['payload'].ctypes.data_as(ctypes.c_char_p), ctypes.POINTER(ctypes.c_int)(), 0, 255 - int(packet['length'] - 1))
+
+                # Endian swap CSP header
                 tmp = numpy.copy(packet['payload'][:4])
                 packet['payload'][0] = tmp[3]
                 packet['payload'][1] = tmp[2]
                 packet['payload'][2] = tmp[1]
                 packet['payload'][3] = tmp[0]
             
-                msg_data = pmt.to_pmt(numpy.concatenate((numpy.array([int(packet['length']) - 33], dtype=numpy.uint8), packet['payload'][:int(packet['length']) - 33])))
-                self.message_port_pub(pmt.intern('out'),  pmt.cons(pmt.PMT_NIL, msg_data))
+                if bytes_corr >= 0:
+                    msg_data = pmt.to_pmt(numpy.concatenate((numpy.array([int(packet['length']) - 33], dtype=numpy.uint8), packet['payload'][:int(packet['length']) - 33])))
+                    self.message_port_pub(pmt.intern('out'),  msg_data)
+
+                print "------ PACKET DECODING -------"
+                print "Packet length:  ", int(packet['length'])
+                if bytes_corr < 0:
+                    print "RS ERROR - COULD NOT DECODE PACKET"
+                else:
+                    print "Bytes corrected: ", bytes_corr
+
+                print ""
+
             except:
                 print "except in frame decode"
+
         return len(input_items[0])
 
