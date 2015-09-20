@@ -33,7 +33,7 @@ GR_PYTHON_INSTALL(
     __init__.py
     frame_decoder.py
     descrambler.py
-    frame_encoder.py DESTINATION ${GR_PYTHON_DIR}/ax100
+    DESTINATION ${GR_PYTHON_DIR}/ax100
 )
 
 ########################################################################

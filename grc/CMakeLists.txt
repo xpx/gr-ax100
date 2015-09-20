@@ -16,11 +16,9 @@
 # along with GNU Radio; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
-
 install(FILES
     ax100_frame_decoder.xml
     ax100_descrambler.xml
-    ax100_frame_encoder.xml
     ax100_frame_decoder_cc.xml
     ax100_descrambler_cc.xml DESTINATION share/gnuradio/grc/blocks
 )
