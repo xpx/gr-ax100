@@ -46,6 +46,12 @@ class frame_decoder(gr.sync_block):
         tags = self.get_tags_in_window(0,0,len(in0))
 
         for tag in tags:
+            # We have a maximum frame length of 255 bytes so check if we have enough data to process frame
+            # Else we return the numbers of items read before we found the current tag
+            if (tag.offset - self.nitems_read(0)) > len(in0) - 255 * 8:
+                print "offset:", tag.offset, "items read: ", self.nitems_read(0), "numofitems: ", len(in0)
+                return (tag.offset - self.nitems_read(0) -1)
+
             try:
                 packet = {}
                 packet['length'] = numpy.packbits(in0[tag.offset - self.nitems_read(0):tag.offset + 8 - self.nitems_read(0)])

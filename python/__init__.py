@@ -33,4 +33,5 @@ except ImportError:
 # import any pure python here
 from frame_decoder import frame_decoder
 from descrambler import descrambler
+from frame_encoder import frame_encoder
 #

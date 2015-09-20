@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<block>
+  <name>frame_decoder_cc</name>
+  <key>ax100_frame_decoder_cc</key>
+  <category>ax100</category>
+  <import>import ax100</import>
+  <make>ax100.frame_decoder_cc()</make>
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <!--<param>
+    <name>RS</name>
+    <key>rs_enabled</key>
+    <type>enum</type>
+  </param>-->
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+
+</block>
