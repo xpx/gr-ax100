@@ -43,7 +43,7 @@ namespace gr {
       zmq::socket_t 	*d_socket;
 	
      public:
-      frame_decoder_cc_impl();
+      frame_decoder_cc_impl(char *address);
       ~frame_decoder_cc_impl();
 
       // Where all the action really happens

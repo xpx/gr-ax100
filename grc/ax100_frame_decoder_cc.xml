@@ -4,7 +4,7 @@
   <key>ax100_frame_decoder_cc</key>
   <category>ax100</category>
   <import>import ax100</import>
-  <make>ax100.frame_decoder_cc()</make>
+  <make>ax100.frame_decoder_cc($address)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
@@ -15,6 +15,11 @@
     <key>rs_enabled</key>
     <type>enum</type>
   </param>-->
+  <param>
+    <name>ZMQ Address</name>
+    <key>address</key>
+    <type>string</type>
+  </param>
 
   <!-- Make one 'sink' node per input. Sub-nodes:
        * name (an identifier for the GUI)

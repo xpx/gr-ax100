@@ -30,16 +30,16 @@ namespace gr {
   namespace ax100 {
 
     frame_decoder_cc::sptr
-    frame_decoder_cc::make()
+    frame_decoder_cc::make(char *address)
     {
       return gnuradio::get_initial_sptr
-        (new frame_decoder_cc_impl());
+        (new frame_decoder_cc_impl(address));
     }
 
     /*
      * The private constructor
      */
-    frame_decoder_cc_impl::frame_decoder_cc_impl()
+    frame_decoder_cc_impl::frame_decoder_cc_impl(char *address)
       : gr::sync_block("frame_decoder_cc",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(0, 0, 0))
@@ -48,7 +48,7 @@ namespace gr {
 
       	    d_context = new zmq::context_t(1);
 	    d_socket = new zmq::socket_t(*d_context, ZMQ_PUB);
-	    d_socket->connect("tcp://127.0.0.1:6000");
+	    d_socket->connect(address);
 
     }
 
@@ -80,18 +80,15 @@ namespace gr {
 
       this->get_tags_in_window(d_tags, 0, 0, noutput_items);
       for(d_tags_itr = d_tags.begin(); d_tags_itr != d_tags.end(); d_tags_itr++) {
-	      	printf("i:%d\r\n", i++);
 		// Check that we have enough data for a full frame
 		if ((d_tags_itr->offset - this->nitems_read(0)) > (noutput_items - 255 * 8)) {
-			printf("Not enough samples for full packet at tag offset: %lu\r\n", d_tags_itr->offset - this->nitems_read(0));
+			//printf("Not enough samples for full packet at tag offset: %lu\r\n", d_tags_itr->offset - this->nitems_read(0));
 			return (d_tags_itr->offset - this->nitems_read(0) - 1);
 		}
 
 		d_pack->pack(frame_data, &in[d_tags_itr->offset - this->nitems_read(0)], 1);
-		printf("Frame len: %d, offset: %lu, read: %lu, outputote,s: %d\r\n", frame_data[0], d_tags_itr->offset, this->nitems_read(0), noutput_items);
 		d_pack->pack(&frame_data[1], &in[d_tags_itr->offset + 8 - this->nitems_read(0)], frame_data[0] - 1);
 		rs_res = decode_rs_8(&frame_data[1], NULL, 0, 255 - 237 -1);
-		printf("RS bytes corrected: %d\r\n", rs_res);
 
 		// Send via ZMQ if RS ok
 		if (rs_res >= 0) {
@@ -108,8 +105,12 @@ namespace gr {
 			frame_data[0] -= 32;
 			zmq::message_t zmsg(frame_data[0]);
 			memcpy(zmsg.data(), frame_data, frame_data[0]);
-			printf("ZMQ SEND: %d\r\n", d_socket->send(zmsg));
+			if (d_socket->send(zmsg) < 0) {
+				printf("ZMQ send error\r\n");
+			}
 		}
+		printf("\r\n------------ FRAME INFO -------------\r\n");
+		printf("Length: %d\r\nBytes corrected: %d\r\n", frame_data[0], rs_res);
 
       }
 

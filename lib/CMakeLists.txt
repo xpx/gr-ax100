@@ -27,12 +27,11 @@ include_directories(
 	${ZEROMQ_INCLUDE_DIRS}
 )
 link_directories(${Boost_LIBRARY_DIRS})
-
 list(APPEND ax100_sources
     ax100rs.cc
     frame_decoder_cc_impl.cc
     descrambler_cc_impl.cc
-)
+    )
 
 set(ax100_sources "${ax100_sources}" PARENT_SCOPE)
 if(NOT ax100_sources)
