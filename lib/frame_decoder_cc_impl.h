@@ -23,6 +23,7 @@
 
 #include <ax100/frame_decoder_cc.h>
 #include <gnuradio/blocks/pack_k_bits.h>
+#include <zmq.hpp>
 
 namespace gr {
   namespace ax100 {
@@ -30,11 +31,17 @@ namespace gr {
     class frame_decoder_cc_impl : public frame_decoder_cc
     {
      private:
-      // Nothing to declare in this block.
+      // Tags
       std::vector<tag_t> d_tags;
       std::vector<tag_t>::iterator d_tags_itr;
+
+      // Pack bits
       blocks::kernel::pack_k_bits *d_pack;
 
+      // ZMQ
+      zmq::context_t 	*d_context;
+      zmq::socket_t 	*d_socket;
+	
      public:
       frame_decoder_cc_impl();
       ~frame_decoder_cc_impl();

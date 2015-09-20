@@ -22,11 +22,14 @@
 ########################################################################
 include(GrPlatform) #define LIB_SUFFIX
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(
+	${Boost_INCLUDE_DIR}
+	${ZEROMQ_INCLUDE_DIRS}
+)
 link_directories(${Boost_LIBRARY_DIRS})
 
 list(APPEND ax100_sources
-	ax100rs.cc
+    ax100rs.cc
     frame_decoder_cc_impl.cc
     descrambler_cc_impl.cc
 )
@@ -38,7 +41,7 @@ if(NOT ax100_sources)
 endif(NOT ax100_sources)
 
 add_library(gnuradio-ax100 SHARED ${ax100_sources})
-target_link_libraries(gnuradio-ax100 ${Boost_LIBRARIES} ${GNURADIO_ALL_LIBRARIES})
+target_link_libraries(gnuradio-ax100 ${Boost_LIBRARIES} ${GNURADIO_ALL_LIBRARIES} ${ZEROMQ_LIBRARIES})
 set_target_properties(gnuradio-ax100 PROPERTIES DEFINE_SYMBOL "gnuradio_ax100_EXPORTS")
 
 if(APPLE)
@@ -61,7 +64,7 @@ install(TARGETS gnuradio-ax100
 ########################################################################
 include(GrTest)
 
-include_directories(${CPPUNIT_INCLUDE_DIRS})
+include_directories(${CPPUNIT_INCLUDE_DIRS} ${ZEROMQ_LIBRARIES})
 
 list(APPEND test_ax100_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/test_ax100.cc
@@ -74,6 +77,7 @@ target_link_libraries(
   test-ax100
   ${GNURADIO_RUNTIME_LIBRARIES}
   ${Boost_LIBRARIES}
+  ${ZEROMQ_LIBRARIES}
   ${CPPUNIT_LIBRARIES}
   gnuradio-ax100
 )
