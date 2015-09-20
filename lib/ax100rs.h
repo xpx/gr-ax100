@@ -3,8 +3,15 @@
  * Copyright Feb 2004, Phil Karn, KA9Q
  * May be used under the terms of the GNU Lesser General Public License (LGPL)
  */
+#ifdef __cplusplus
+    extern "C" {
+#endif
+#ifndef AX100RS_H_
+#define AX100RS_H_
 
 typedef unsigned char data_t;
+
+int decode_rs_8(data_t *data, int *eras_pos, int no_eras, int pad);
 
 static inline int mod255(int x){
   while (x >= 255) {
@@ -75,3 +82,7 @@ static const data_t CCSDS_poly[] = {
 #undef A0
 #define A0 (NN)
 
+#endif
+#ifdef __cplusplus
+}
+#endif

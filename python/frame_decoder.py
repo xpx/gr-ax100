@@ -39,7 +39,6 @@ class frame_decoder(gr.sync_block):
         self.libax100.decode_rs_8.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_int), ctypes.c_int, ctypes.c_int]
         self.message_port_register_out(pmt.intern('out'))
 
-
     def work(self, input_items, output_items):
         in0 = input_items[0]
 
@@ -49,7 +48,7 @@ class frame_decoder(gr.sync_block):
             # We have a maximum frame length of 255 bytes so check if we have enough data to process frame
             # Else we return the numbers of items read before we found the current tag
             if (tag.offset - self.nitems_read(0)) > len(in0) - 255 * 8:
-                print "offset:", tag.offset, "items read: ", self.nitems_read(0), "numofitems: ", len(in0)
+                #print "offset:", tag.offset, "items read: ", self.nitems_read(0), "numofitems: ", len(in0)
                 return (tag.offset - self.nitems_read(0) -1)
 
             try:

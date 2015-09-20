@@ -3,6 +3,9 @@
  * Copyright Feb 2004, Phil Karn, KA9Q
  * May be used under the terms of the GNU Lesser General Public License (LGPL)
  */
+#ifdef __cplusplus
+    extern "C" {
+#endif
 
 #include <stdio.h>
 #include <ax100/ax100.h>
@@ -271,3 +274,8 @@ int decode_rs_8(data_t *data, int *eras_pos, int no_eras, int pad){
 
   return retval;
 }
+
+
+#ifdef __cplusplus
+}
+#endif

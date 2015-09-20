@@ -24,6 +24,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "frame_decoder_cc_impl.h"
+#include "ax100rs.h"
 
 namespace gr {
   namespace ax100 {
@@ -43,7 +44,7 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(0, 0, 0))
     {
-	    set_output_multiple(255*8);
+	    set_output_multiple(256*8);
     }
 
     /*
@@ -61,19 +62,25 @@ namespace gr {
     {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
-      unsigned char test = 5;
+      unsigned char frame_len;
+      int rs_res;
+      unsigned char frame_data[255];
       d_tags.clear();
       d_pack = new blocks::kernel::pack_k_bits(8);
 
       this->get_tags_in_window(d_tags, 0, 0, noutput_items);
       for(d_tags_itr = d_tags.begin(); d_tags_itr != d_tags.end(); d_tags_itr++) {
 		// Check that we have enough data for a full frame
-		if ((d_tags_itr->offset - this->nitems_read(0) - 1) > (noutput_items - 255 * 8)) {
+		if ((d_tags_itr->offset - this->nitems_read(0)) > (noutput_items - 255 * 8)) {
 			printf("Not enough samples for full packet at tag offset: %lu\r\n", d_tags_itr->offset - this->nitems_read(0));
 			return (d_tags_itr->offset - this->nitems_read(0) - 1);
 		}
-		d_pack->pack(&test, &in[d_tags_itr->offset - this->nitems_read(0)], 1);
-		printf("Packet len: %d\r\n", test);
+
+		d_pack->pack(&frame_len, &in[d_tags_itr->offset - this->nitems_read(0)], 1);
+		printf("Packet len: %d, offset: %d, read: %d, outputote,s: %d\r\n", test, d_tags_itr->offset, this->nitems_read(0), noutput_items);
+		d_pack->pack(frame_data, &in[d_tags_itr->offset + 8 - this->nitems_read(0)], test - 1);
+		rs_res = decode_rs_8(frame_data, NULL, 0, 255 - 237 -1);
+		printf("RS bytes corrected: %d\r\n", rs_res);
 
       }
 
