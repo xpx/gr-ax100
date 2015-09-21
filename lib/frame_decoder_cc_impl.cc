@@ -88,7 +88,7 @@ namespace gr {
 
 		d_pack->pack(frame_data, &in[d_tags_itr->offset - this->nitems_read(0)], 1);
 		d_pack->pack(&frame_data[1], &in[d_tags_itr->offset + 8 - this->nitems_read(0)], frame_data[0] - 1);
-		rs_res = decode_rs_8(&frame_data[1], NULL, 0, 255 - 32 - frame_data[0] - 1);
+		rs_res = decode_rs_8(&frame_data[1], NULL, 0, 255 - frame_data[0] + 1);
 
 		// Send via ZMQ if RS ok
 		if (rs_res >= 0) {
