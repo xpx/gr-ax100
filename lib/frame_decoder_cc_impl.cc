@@ -74,6 +74,7 @@ namespace gr {
       int rs_res;
       void *msg_data = NULL;
       unsigned char frame_data[255];
+      unsigned char frame_len = 0;
       int i = 0;
       d_tags.clear();
       d_pack = new blocks::kernel::pack_k_bits(8);
@@ -103,14 +104,18 @@ namespace gr {
 			// Send with ZMQ
 			// len_byte + csp_packet - rs = frame_len - 32
 			frame_data[0] -= 32;
-			zmq::message_t zmsg(frame_data[0]);
-			memcpy(zmsg.data(), frame_data, frame_data[0]);
+			frame_len = frame_data[0];
+			zmq::message_t zmsg(frame_len);
+			// Get csp dest
+			frame_data[0] = ((frame_data[4] & 1) << 4) + ((frame_data[3] >> 4) & 0x0f);
+			memcpy(zmsg.data(), frame_data, frame_len);
 			if (d_socket->send(zmsg) < 0) {
 				printf("ZMQ send error\r\n");
 			}
 		}
 		printf("\r\n------------ FRAME INFO -------------\r\n");
-		printf("Length: %d\r\nBytes corrected: %d\r\n", frame_data[0], rs_res);
+		printf("Length: %d\r\nBytes corrected: %d\r\n", frame_len, rs_res);
+		printf("Dest: %d\r\n", frame_data[0]);
 
       }
 
