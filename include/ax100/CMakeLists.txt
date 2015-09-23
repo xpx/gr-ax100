@@ -25,5 +25,5 @@ install(FILES
     ax100.h
     frame_decoder_cc.h
     descrambler_cc.h
-    DESTINATION include/ax100
+    frame_encoder.h DESTINATION include/ax100
 )
