@@ -1,3 +1,5 @@
+# Please use https://github.com/daniestevez/gr-satellites instead of this outdated code. 
+
 # gr-ax100
 
 ## Recipe for pybombs
